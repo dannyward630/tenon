@@ -358,7 +358,13 @@ func TestCallTimeout(t *testing.T) {
 		t.Fatalf("résultat %+v", res)
 	}
 	// Le serveur reste utilisable.
-	if res := run(t, toolByName(t, m, "mcp__srv__echo"), `{"text":"encore"}`); res.IsError || res.Content != "encore" {
+	echo, ok := toolByName(t, m, "mcp__srv__echo").(*mcpTool)
+	if !ok {
+		t.Fatal("outil echo MCP inattendu")
+	}
+	// La vérification ne doit pas partager le délai court qui sert au test.
+	echo.opts.CallTimeout = 5 * time.Second
+	if res := run(t, echo, `{"text":"encore"}`); res.IsError || res.Content != "encore" {
 		t.Fatalf("après délai %+v", res)
 	}
 }
