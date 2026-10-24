@@ -12,6 +12,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/x/ansi"
 
 	"github.com/tenon-code-eu/tenon/internal/engine"
 	"github.com/tenon-code-eu/tenon/internal/event"
@@ -821,8 +822,8 @@ func TestPermissionNetworkOption(t *testing.T) {
 		shown     string
 		sessionKy rune
 	}{
-		{i18n.EN, 'w', "w: allow with network", 'a'},
-		{i18n.FR, 'r', "r : autoriser avec réseau", 's'},
+		{i18n.EN, 'w', "w: with network", 'a'},
+		{i18n.FR, 'r', "r : avec réseau", 's'},
 	} {
 		t.Run(string(tc.lang), func(t *testing.T) {
 			f := newFake()
@@ -855,6 +856,22 @@ func TestPermissionNetworkOption(t *testing.T) {
 			h.send(runeKey(tc.key))
 			if _, ok := f.reply("p3"); ok {
 				t.Fatal("réseau accepté sans isolation")
+			}
+		})
+	}
+}
+
+func TestPermissionNetworkKeysFit80Columns(t *testing.T) {
+	for _, lang := range []i18n.Lang{i18n.EN, i18n.FR} {
+		t.Run(string(lang), func(t *testing.T) {
+			f := newFake()
+			h := newHarness(t, f, Options{Lang: lang})
+			p := shellPerm("p1")
+			p.Sandboxed = true
+			askPermNow(t, h, f, p)
+
+			if width := ansi.StringWidth(h.m.promptKeys()); width > 80 {
+				t.Fatalf("network permission keys use %d columns, want at most 80: %q", width, h.m.promptKeys())
 			}
 		})
 	}

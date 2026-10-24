@@ -374,11 +374,11 @@ func (m Model) ruleNetwork() bool {
 // promptKeys renvoie la ligne des touches de la demande affichée.
 func (m Model) promptKeys() string {
 	if m.networkOption() {
-		label := lowerFirst(i18n.T(m.lang, "perm.allow_network"))
 		if m.prompts[0].p.HookReason != "" {
+			label := lowerFirst(i18n.T(m.lang, "perm.allow_network"))
 			return i18n.T(m.lang, "tui.perm.keys_hook_network", label)
 		}
-		return i18n.T(m.lang, "tui.perm.keys_tool_network", label)
+		return i18n.T(m.lang, "tui.perm.keys_tool_network")
 	}
 	if m.ruleNetwork() && m.prompts[0].p.HookReason == "" {
 		// « Pour la session » garde le réseau de la règle (jamais celui d'une réponse) : à préciser.
